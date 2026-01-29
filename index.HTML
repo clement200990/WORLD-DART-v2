@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Dart</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:'Pirata One', cursive;
+}
+
+.page{
+  display:none;
+  width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center;
+  padding:40px;
+  box-sizing:border-box;
+}
+
+.page.active{ display:block; }
+
+.center-full{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:100%;
+  text-align:center;
+}
+
+h1{ font-size:3em; margin-bottom:30px; }
+
+.rules-text{
+  max-width:900px;
+  font-size:1.6em;
+  line-height:1.4;
+}
+
+.btn{
+  width:340px;
+  padding:18px;
+  margin:10px;
+  font-size:1.6em;
+  cursor:pointer;
+  border-radius:10px;
+  background:#caa46a;
+}
+
+.btn-traversee{ background:#4a7bd0; }
+.btn-expedition{ background:#4ea070; }
+.btn-affrontements{ background:#b04a4a; }
+.btn-empire{ background:#d4b04a; }
+
+audio{ display:none; }
+</style>
+</head>
+
+<body>
+
+<audio id="introSound" src="intro_pirate.mp3"></audio>
+<audio id="music" src="musique_fond.mp3" loop></audio>
+
+<!-- ================= ACCUEIL ================= -->
+<div id="accueil" class="page active" style="background-image:url('fond_accueil.png')">
+  <div class="center-full">
+    <h1>World Dart</h1>
+    <div class="btn" onclick="startGame()">JOUER</div>
+  </div>
+</div>
+
+<!-- ================= MENU PRINCIPAL ================= -->
+<div id="menu" class="page" style="background-image:url('fond_aventure.png')">
+  <div class="center-full">
+    <h1>Choisis ton aventure</h1>
+    <div class="btn btn-traversee" onclick="go('traversee_menu')">Traversée</div>
+    <div class="btn btn-expedition" onclick="go('expedition_setup')">Expédition</div>
+    <div class="btn btn-affrontements" onclick="go('affrontements_menu')">Affrontements</div>
+    <div class="btn btn-empire" onclick="go('empire_menu')">Empire</div>
+    <div class="btn" onclick="goRandom()">Aléatoire</div>
+  </div>
+</div>
+
+<!-- ================= MENUS DES MODES ================= -->
+<div id="traversee_menu" class="page" style="background-image:url('fond_traversee.png')">
+  <div class="center-full">
+    <h1>Traversée</h1>
+    <div class="btn btn-traversee" onclick="go('traversee_jeu')">Jouer</div>
+    <div class="btn" onclick="go('traversee_regles')">Règles</div>
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<div id="expedition_menu" class="page" style="background-image:url('fond_expedition.png')">
+  <div class="center-full">
+    <h1>Expédition</h1>
+    <div class="btn btn-expedition" onclick="go('expedition_jeu')">Jouer</div>
+    <div class="btn" onclick="go('expedition_regles')">Règles</div>
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<div id="affrontements_menu" class="page" style="background-image:url('fond_affrontement.png')">
+  <div class="center-full">
+    <h1>Affrontements</h1>
+    <div class="btn btn-affrontements" onclick="go('affrontements_setup')">Jouer</div>
+    <div class="btn" onclick="go('affrontements_regles')">Règles</div>
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<div id="empire_menu" class="page" style="background-image:url('fond_empire.png')">
+  <div class="center-full">
+    <h1>Empire</h1>
+    <div class="btn btn-empire" onclick="go('empire_setup')">Jouer</div>
+    <div class="btn" onclick="go('empire_regles')">Règles</div>
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<!-- ================= RÈGLES ================= -->
+<div id="traversee_regles" class="page" style="background-image:url('fond_traversee.png')">
+  <div class="center-full">
+    <h1>Règles – Traversée</h1>
+    <div class="rules-text">
+Deux cartes aléatoires sont piochées,<br>
+le premier pays est validé, il faut ensuite atteindre le pays de destination en touchant des pays frontaliers du pays de base, ou des pays déjà validés.<br><br>
+Si plusieurs joueurs arrivent à destination dans le même tour, c'est alors le premier à arriver à la capitale qui gagne, si plusieurs joueurs arrivent à la capitale dans le même tour, il y a égalité.<br><br>
+Particularité : si, lors d'un lancé de trois fléchettes, vous arrivé a relié la première fléchette à un pays frontalier en les connectant avec la deuxième ou troisième fléchette, c'est validé.
+    </div>
+    <div class="btn" onclick="go('traversee_menu')">Retour</div>
+  </div>
+</div>
+
+<div id="expedition_regles" class="page" style="background-image:url('fond_expedition.png')">
+  <div class="center-full">
+    <h1>Règles – Expédition</h1>
+    <div class="rules-text">
+Chaque des joueurs reçoivent au hasard trois cartes vertes, trois cartes jaunes et trois cartes rouges.<br>
+Les joueurs jouent chacun leur tour dans le but de toucher un ou plusieurs de leurs pays. Lorsqu’un pays est touché, la carte est validée.<br><br>
+Si le Bullseye (capitale) est touché, le score de la carte est multiplié par 5.<br>
+Zone de naufrage : défaussez au hasard une carte non encore gagnée.<br>
+Zone de trésor : piochez une carte trésor au hasard et remportez les points associés.<br>
+Carte bonus (utilisable qu'une seul fois) : si le contrat du bonus est rempli, le joueur remporte les points associés.<br><br>
+À la fin du 6ᵉ tour (3 fléchettes par tour), le joueur ayant le plus de points remporte la manche.
+    </div>
+    <div class="btn" onclick="go('expedition_menu')">Retour</div>
+  </div>
+</div>
+
+<div id="affrontements_regles" class="page" style="background-image:url('fond_affrontement.png')">
+  <div class="center-full">
+    <h1>Règles – Affrontements</h1>
+    <div class="rules-text">
+Facile : 2 cartes vertes / 1 carte jaune<br>
+Moyen : 2 cartes jaunes / 1 carte verte<br>
+Difficile : 2 cartes jaunes / 1 carte rouge<br>
+Pro : 2 cartes rouges / 1 carte jaune<br><br>
+Chaque joueur reçoit ses cartes selon le niveau choisi.<br>
+À chaque fois qu’un joueur touche un pays, il récupère la carte correspondante.<br><br>
+⚠️ Élimination :<br>
+Lorsqu’un joueur n’a plus de carte, il dispose d’un dernier tour pour en récupérer une.
+Si à la fin de ce tour il n’a toujours pas de carte, il perd la manche. Le dernier en jeu gagne la manche.
+    </div>
+    <div class="btn" onclick="go('affrontements_menu')">Retour</div>
+  </div>
+</div>
+
+<div id="empire_regles" class="page" style="background-image:url('fond_empire.png')">
+  <div class="center-full">
+    <h1>Règles – Empire</h1>
+    <div class="rules-text">
+Chaque joueur pioche au hasard une carte verte, qui devient le premier pays de son empire.<br>
+Les joueurs jouent chacun leur tour 3 fléchettes, dans le but de toucher un pays frontalier au pays d’origine ou un pays frontalier à un pays déjà validé lors d’un lancer précédent.<br>
+Chaque pays touché permet de récupérer la carte correspondante.<br><br>
+À la fin du 6ᵉ tour de fléchettes, le joueur possédant le plus de cartes remporte la manche.<br><br>
+Particularité : si, lors d'un lancé de trois fléchettes, vous arrivé a relié la première fléchette à un pays frontalier en les connectant avec la deuxième ou troisième fléchette, c'est validé.
+    </div>
+    <div class="btn" onclick="go('empire_menu')">Retour</div>
+  </div>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goRandom(){
+  const pages = ['traversee_menu','expedition_menu','affrontements_menu','empire_menu'];
+  go(pages[Math.floor(Math.random()*pages.length)]);
+}
+
+function startGame(){
+  const i=document.getElementById('introSound');
+  const m=document.getElementById('music');
+  i.play();
+  i.onended=()=>m.play();
+  go('menu');
+}
+</script>
+<!-- ===================== -->
+<!-- TRAVERSÉE – JEU + RÈGLES (BLOC AUTONOME STABLE) -->
+<!-- ===================== -->
+
+<!-- ===== TRAVERSÉE – RÈGLES ===== -->
+<div id="traversee_regles" class="page" style="background-image:url('fond_traversee.png')">
+  <div class="center-full" style="justify-content:flex-start;padding-top:40px;">
+    <h1 style="font-size:3.8em;margin-bottom:20px;">Règles – Traversée</h1>
+
+    <div class="rules-text" style="margin-top:20px;">
+      Deux cartes aléatoires sont piochées,<br>
+      le premier pays est validé, il faut ensuite atteindre le pays de destination
+      en touchant des pays frontaliers du pays de base, ou des pays déjà validés.<br><br>
+
+      Si plusieurs joueurs arrivent à destination dans le même tour,
+      c'est alors le premier à arriver à la capitale qui gagne.
+      Si plusieurs joueurs arrivent à la capitale dans le même tour, il y a égalité.<br><br>
+
+      Particularité : si, lors d'un lancé de trois fléchettes,
+      vous arrivez à relier la première fléchette à un pays frontalier
+      en les connectant avec la deuxième ou troisième fléchette, c'est validé.
+    </div>
+
+    <div style="position:absolute;bottom:30px;">
+      <div class="btn" style="width:220px;" onclick="retourTraverseeJeu()">Retour</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRAVERSÉE – JEU ===== -->
+<div id="traversee_jeu" class="page" style="background-image:url('fond_traversee.png')">
+  <div class="center-full" style="justify-content:flex-start;padding-top:25px;">
+
+    <h1 style="font-size:4.2em;margin-bottom:10px;">Traversée</h1>
+
+    <div id="traversee_cartes"
+         style="display:flex;gap:50px;margin-top:20px;margin-bottom:120px;">
+    </div>
+
+    <div style="position:absolute;bottom:30px;display:flex;gap:20px;">
+      <div class="btn btn-traversee" style="width:200px;" onclick="startTraversee()">Relancer</div>
+      <div class="btn" style="width:200px;" onclick="ouvrirReglesTraversee()">Règles</div>
+      <div class="btn" style="width:200px;" onclick="go('menu')">Menu</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= TRAVERSÉE – DONNÉES ================= */
+
+const paysTraversee = [
+  { nom:"Canada", continent:"Amerique" },
+  { nom:"États-Unis", continent:"Amerique" },
+  { nom:"Brésil", continent:"Amerique" },
+  { nom:"Australie", continent:"Oceanie" },
+  { nom:"Inde", continent:"Asie" },
+  { nom:"Argentine", continent:"Amerique" },
+  { nom:"Kazakhstan", continent:"Asie" },
+  { nom:"Algérie", continent:"Afrique" },
+  { nom:"République démocratique du Congo", continent:"Afrique" },
+  { nom:"Danemark", continent:"Europe" },
+  { nom:"Arabie saoudite", continent:"Asie" },
+  { nom:"Mexique", continent:"Amerique" },
+  { nom:"Indonésie", continent:"Asie" },
+  { nom:"Soudan", continent:"Afrique" },
+  { nom:"Libye", continent:"Afrique" },
+  { nom:"Iran", continent:"Asie" },
+  { nom:"Mongolie", continent:"Asie" },
+  { nom:"Pérou", continent:"Amerique" },
+  { nom:"Tchad", continent:"Afrique" },
+  { nom:"Niger", continent:"Afrique" },
+  { nom:"Angola", continent:"Afrique" },
+  { nom:"Mali", continent:"Afrique" },
+  { nom:"Afrique du Sud", continent:"Afrique" },
+  { nom:"Colombie", continent:"Amerique" },
+  { nom:"Éthiopie", continent:"Afrique" },
+  { nom:"Bolivie", continent:"Amerique" },
+  { nom:"Mauritanie", continent:"Afrique" },
+  { nom:"Égypte", continent:"Afrique" },
+  { nom:"Russie", continent:"Europe" }
+];
+
+/* ================= UTILITAIRE IMAGE ================= */
+
+function nomVersImage(nom){
+  return nom.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/ /g,"-")
+    .replace(/[^a-z-]/g,"")
+    + ".jpg";
+}
+
+/* ================= ÉTAT DE PARTIE ================= */
+
+let traversee_depart = null;
+let traversee_destination = null;
+
+/* ================= JEU ================= */
+
+function startTraversee(){
+  traversee_depart = paysTraversee[Math.floor(Math.random()*paysTraversee.length)];
+  do {
+    traversee_destination = paysTraversee[Math.floor(Math.random()*paysTraversee.length)];
+  } while(traversee_destination.continent === traversee_depart.continent);
+
+  renderTraversee();
+}
+
+function renderTraversee(){
+  const zone = document.getElementById('traversee_cartes');
+  zone.innerHTML = "";
+
+  if(!traversee_depart || !traversee_destination) return;
+
+  const img1 = document.createElement('img');
+  img1.src = nomVersImage(traversee_depart.nom);
+  img1.style.width = "250px";
+
+  const img2 = document.createElement('img');
+  img2.src = nomVersImage(traversee_destination.nom);
+  img2.style.width = "250px";
+
+  zone.appendChild(img1);
+  zone.appendChild(img2);
+}
+
+/* ================= NAVIGATION RÈGLES ================= */
+
+function ouvrirReglesTraversee(){
+  go('traversee_regles');
+}
+
+function retourTraverseeJeu(){
+  go('traversee_jeu');
+  renderTraversee();
+}
+
+/* ================= AUTO-LANCEMENT ================= */
+/* tirage automatique UNIQUEMENT à la première ouverture */
+
+const observerTraversee = new MutationObserver(() => {
+  const page = document.getElementById('traversee_jeu');
+  if (page.classList.contains('active') && !traversee_depart) {
+    startTraversee();
+  }
+});
+
+observerTraversee.observe(document.body, {
+  attributes:true,
+  subtree:true,
+  attributeFilter:["class"]
+});
+</script>
+<!-- ===================== -->
+<!-- EMPIRE – SETUP : NOMBRE DE JOUEURS -->
+<!-- ===================== -->
+<div id="empire_setup" class="page" style="background-image:url('fond_empire.png');background-size:cover;">
+  <div class="center-full" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+
+    <h1 class="pirate-title">Empire</h1>
+
+    <div style="font-size:2em;margin:35px 0;">Nombre de joueurs</div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(2,260px);
+      grid-template-rows:repeat(3,80px);
+      gap:25px 120px;
+      justify-content:center;
+      align-items:center;
+      margin-left:-120px;
+    ">
+      <div class="btn btn-empire" onclick="preparePlayers(1)">1 joueur</div>
+      <div class="btn btn-empire" onclick="preparePlayers(2)">2 joueurs</div>
+      <div class="btn btn-empire" onclick="preparePlayers(3)">3 joueurs</div>
+      <div class="btn btn-empire" onclick="preparePlayers(4)">4 joueurs</div>
+      <div class="btn btn-empire" onclick="preparePlayers(5)">5 joueurs</div>
+      <div class="btn btn-empire" onclick="preparePlayers(6)">6 joueurs</div>
+    </div>
+
+    <div class="btn" style="margin-top:50px;" onclick="go('menu')">Menu</div>
+
+  </div>
+</div>
+<!-- ===================== -->
+<!-- EMPIRE – SETUP : NOMS DES JOUEURS (FONCTIONNEL) -->
+<!-- ===================== -->
+<div id="empire_names" class="page" style="background-image:url('fond_empire.png');background-size:cover;">
+  <div class="center-full" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+
+    <h1 class="pirate-title">Nom des joueurs</h1>
+
+    <div id="empire_name_inputs"
+         style="display:flex;flex-direction:column;gap:20px;width:420px;text-align:center;">
+      <!-- inputs générés par preparePlayers(nb) -->
+    </div>
+
+    <div class="btn btn-empire" style="margin-top:35px;" onclick="startEmpire()">
+      Démarrer la partie
+    </div>
+
+    <div class="btn" style="margin-top:40px;" onclick="go('empire_setup')">
+      Retour
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* FONCTION QUI LANCE CORRECTEMENT CETTE PAGE */
+function preparePlayers(nb){
+  empNbPlayers = nb;
+
+  const inputs = document.getElementById("empire_name_inputs");
+  inputs.innerHTML = "";
+
+  for(let i = 0; i < nb; i++){
+    inputs.innerHTML +=
+      `<input id="emp_name_${i}" placeholder="Nom du joueur ${i+1}">`;
+  }
+
+  go("empire_names"); // OBLIGATOIRE pour afficher la page
+}
+</script>
+<!-- ===================== -->
+<!-- EMPIRE – JEU -->
+<!-- ===================== -->
+<!-- ===================== -->
+<!-- EMPIRE – JEU (REMONTÉ ~25%) -->
+<!-- ===================== -->
+<div id="empire_jeu" class="page" style="background-image:url('fond_empire.png');background-size:cover;">
+  <div style="
+    width:80%;
+    height:720px;
+    margin:-80px auto 0; /* ⬅️ REMONTÉ FORT (~25%) */
+    padding:25px;
+    box-sizing:border-box;
+    display:flex;
+    gap:30px;
+    background:rgba(255,255,255,0.05);
+  ">
+
+    <!-- ===== COLONNE GAUCHE : JEU ===== -->
+    <div style="width:60%;display:flex;justify-content:center;">
+
+      <div style="
+        width:90%;
+        max-width:520px;
+        display:flex;
+        flex-direction:column;
+        justify-content:space-between;
+      ">
+
+        <div>
+          <h1 id="emp_tour" class="pirate-title" style="margin-bottom:6px;text-align:center;">
+            Tour 1
+          </h1>
+
+          <div id="emp_joueur_nom"
+               style="font-size:1.4em;margin-bottom:4px;text-align:center;"></div>
+
+          <img id="emp_carte_base"
+               style="width:180px;display:block;margin:0 auto 10px auto;">
+
+          <div style="font-size:1.1em;text-align:center;">
+            Pays en cours de validation :
+          </div>
+          <div id="emp_pending"
+               style="min-height:28px;margin-bottom:6px;text-align:center;"></div>
+
+          <div style="display:flex;justify-content:space-between;gap:12px;">
+            <div>
+              <strong>Verts</strong><br>
+              <select id="emp_green" multiple size="6"></select>
+            </div>
+            <div>
+              <strong>Jaunes</strong><br>
+              <select id="emp_yellow" multiple size="6"></select>
+            </div>
+            <div>
+              <strong>Rouges</strong><br>
+              <select id="emp_red" multiple size="6"></select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:20px;margin-top:12px;">
+          <div class="btn btn-empire" onclick="empireValidate()">Valider</div>
+          <div class="btn" onclick="empireSkip()">Passer</div>
+          <div class="btn" onclick="empireUndo()">Retour</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== COLONNE DROITE : RÉCAP ===== -->
+    <div style="width:40%;display:flex;flex-direction:column;justify-content:space-between;">
+
+      <div>
+        <div id="emp_players" style="font-size:1.3em;margin-top : 100px;margin-left : -50px"></div>
+      </div>
+
+      <div style="text-align:right;">
+        <div class="btn" onclick="go('menu')">Menu</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+      <!-- ===================== -->
+<!-- EMPIRE – JEU (BLOC COMPLET AJUSTÉ) -->
+<!-- ===================== -->
+<script>
+/* ===== DONNÉES ===== */
+const empGreen={"Russie":10,"Canada":17,"États-Unis":18,"Brésil":20,"Australie":22,"Inde":50,"Argentine":57,"Kazakhstan":63,"Algérie":71,"République démocratique du Congo":71,"Danemark":76,"Arabie saoudite":82,"Mexique":88,"Indonésie":88,"Soudan":88,"Libye":95,"Iran":104,"Mongolie":109,"Pérou":133,"Tchad":133,"Niger":135,"Angola":135,"Mali":138,"Afrique du Sud":140,"Colombie":151,"Éthiopie":155,"Bolivie":155,"Mauritanie":166,"Égypte":171};
+const empYellow={"Tanzanie":182,"Nigeria":185,"Venezuela":188,"Namibie":209,"Mozambique":213,"Pakistan":216,"Turquie":216,"Chili":225,"Zambie":225,"Birmanie":255,"France":255,"Afghanistan":261,"Soudan du Sud":273,"Somalie":273,"République centrafricaine":273,"Ukraine":280,"Madagascar":294,"Botswana":294,"Kenya":294,"Yémen":328,"Thaïlande":338,"Espagne":338,"Turkménistan":348,"Cameroun":359,"Papouasie-Nouvelle-Guinée":371,"Suède":383,"Ouzbékistan":383,"Maroc":383,"Irak":396,"Paraguay":425};
+const empRed={"Zimbabwe":442,"Japon":460,"Allemagne":479,"République du Congo":500,"Finlande":500,"Viêt Nam":522,"Malaisie":522,"Norvège":522,"Côte d'Ivoire":522,"Pologne":547,"Oman":547,"Italie":575,"Philippines":575,"Burkina Faso":638,"Nouvelle-Zélande":638,"Gabon":638,"Sahara occidental":638,"Équateur":676,"Guinée":676,"Royaume-Uni":718,"Ouganda":718,"Ghana":718,"Roumanie":718,"Laos":718,"Guyana":821,"Biélorussie":821,"Kirghizistan":884,"Sénégal":884,"Syrie":958,"Cambodge":958};
+
+/* ===== ÉTAT ===== */
+let empPlayers=[],empTurn=1,empIndex=0,empHistory=[],empPending=[],empAvailable={};
+
+/* ===== LANCEMENT ===== */
+function startEmpire(){
+  empPlayers=[];empTurn=1;empIndex=0;empHistory=[];empPending=[];
+  empAvailable={green:Object.keys(empGreen),yellow:Object.keys(empYellow),red:Object.keys(empRed)};
+  for(let i=0;i<empNbPlayers;i++){
+    const name=document.getElementById("emp_name_"+i).value||"Joueur "+(i+1);
+    const base=empAvailable.green.splice(Math.floor(Math.random()*empAvailable.green.length),1)[0];
+    empPlayers.push({name,pays:[base],points:empGreen[base]});
+  }
+  renderEmpire();
+  go("empire_jeu");
+}
+
+/* ===== RENDER ===== */
+function renderEmpire(){
+  const p=empPlayers[empIndex];
+
+  document.getElementById("emp_tour").innerText="Tour "+empTurn;
+  document.getElementById("emp_joueur_nom").innerText=
+    p.name+" ("+p.points+" pts – "+p.pays.length+" pays)";
+  document.getElementById("emp_carte_base").src=normalize(p.pays[0])+".jpg";
+  document.getElementById("emp_pending").innerText=empPending.join(", ");
+
+  fill("emp_green",empAvailable.green);
+  fill("emp_yellow",empAvailable.yellow);
+  fill("emp_red",empAvailable.red);
+
+  const list=document.getElementById("emp_players");
+  list.innerHTML="";
+  empPlayers.forEach(pl=>{
+    list.innerHTML+=
+      `<strong>${pl.name}</strong>
+       ${pl.pays.length} pays – ${pl.points} pts
+       <span style="font-size:0.9em;opacity:0.85;">
+         ${pl.pays.join(", ")} <!-- ⬅ AJOUT DES PAYS -->
+       </span><br><br>`;
+  });
+}
+
+function fill(id,arr){
+  const s=document.getElementById(id);
+  s.innerHTML="";
+  arr.sort().forEach(p=>{
+    const o=document.createElement("option");
+    o.value=p;o.textContent=p;
+    s.appendChild(o);
+  });
+  s.onchange=()=>{
+    empHistory.push(JSON.stringify({empPlayers,empAvailable,empTurn,empIndex,empPending}));
+    Array.from(s.selectedOptions).forEach(o=>{
+      if(!empPending.includes(o.value)) empPending.push(o.value);
+    });
+    renderEmpire();
+  };
+}
+
+/* ===== ACTIONS ===== */
+function empireValidate(){
+  if(!empPending.length) return;
+  empHistory.push(JSON.stringify({empPlayers,empAvailable,empTurn,empIndex,empPending}));
+  empPending.forEach(val=>{
+    const color=empGreen[val]?"green":empYellow[val]?"yellow":"red";
+    const pts=color==="green"?empGreen[val]:color==="yellow"?empYellow[val]:empRed[val];
+    empPlayers[empIndex].pays.push(val);
+    empPlayers[empIndex].points+=pts;
+    empAvailable[color]=empAvailable[color].filter(p=>p!==val);
+  });
+  empPending=[];
+  nextTurn();
+}
+
+function empireSkip(){
+  empHistory.push(JSON.stringify({empPlayers,empAvailable,empTurn,empIndex,empPending}));
+  empPending=[];
+  nextTurn();
+}
+
+function empireUndo(){
+  if(!empHistory.length) return;
+  const s=JSON.parse(empHistory.pop());
+  empPlayers=s.empPlayers;
+  empAvailable=s.empAvailable;
+  empTurn=s.empTurn;
+  empIndex=s.empIndex;
+  empPending=s.empPending;
+  renderEmpire();
+}
+
+function nextTurn(){
+  empIndex++;
+  if(empIndex>=empPlayers.length){empIndex=0;empTurn++;}
+  if(empTurn>6){endEmpire();}else{renderEmpire();}
+}
+
+/* ===== FIN ===== */
+function endEmpire(){
+  let overlay=document.getElementById("empire_resultat_dyn");
+  if(!overlay){
+    overlay=document.createElement("div");
+    overlay.id="empire_resultat_dyn";
+    overlay.className="page active";
+    overlay.style.cssText="position:fixed;inset:0;background:url('fond_empire.png') center/cover;z-index:9999;";
+    overlay.innerHTML=`<div class="center-full">
+      <h1 class="pirate-title">Classement final</h1>
+      <div id="emp_resultats_dyn" style="font-size:2em;"></div>
+      <div class="btn" onclick="this.closest('.page').remove();go('menu')">Menu</div>
+    </div>`;
+    document.body.appendChild(overlay);
+  }
+  let html="";
+  empPlayers.sort((a,b)=>b.pays.length-a.pays.length||b.points-a.points)
+    .forEach((p,i)=>html+=`${i+1}. ${p.name} – ${p.pays.length} pays – ${p.points} pts<br>`);
+  document.getElementById("emp_resultats_dyn").innerHTML=html;
+}
+
+/* ===== UTILS ===== */
+function normalize(n){
+  return n.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/ /g,"-")
+    .replace(/[^a-z-]/g,"");
+}
+</script>
+<!-- ===================== -->
+<!-- AFFRONTEMENTS – SETUP -->
+<!-- ===================== -->
+<div id="affrontements_setup" class="page" style="background-image:url('fond_affrontement.png')">
+  <div class="center-full">
+
+    <h1>Affrontements</h1>
+    <div style="font-size:2em;margin-bottom:40px;">Nombre de joueurs</div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(2,260px);
+      gap:20px 150px;
+      justify-content:center;
+      margin:0 auto 40px 320PX;
+      position:relative;
+      z-index:2;
+      pointer-events:auto;
+    ">
+      <div class="btn btn-affrontements" onclick="aff_preparePlayers(2)">2 joueurs</div>
+      <div class="btn btn-affrontements" onclick="aff_preparePlayers(3)">3 joueurs</div>
+      <div class="btn btn-affrontements" onclick="aff_preparePlayers(4)">4 joueurs</div>
+      <div class="btn btn-affrontements" onclick="aff_preparePlayers(5)">5 joueurs</div>
+      <div class="btn btn-affrontements" onclick="aff_preparePlayers(6)">6 joueurs</div>
+    </div>
+
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- AFFRONTEMENTS – NOMS -->
+<!-- ===================== -->
+<div id="affrontements_names" class="page" style="background-image:url('fond_affrontement.png')">
+  <div class="center-full" style="flex-direction : column ; gap : -150px ; padding - top : 20px;">
+
+    <h1>Noms des joueurs</h1>
+
+    <div id="affrontements_name_inputs"
+         style="display:flex;flex-direction:column;gap:5px;width:420px;margin:5px auto;">
+    </div>
+<!-- ===================== -->
+<!-- AFFRONTEMENTS – NIVEAU -->
+<!-- ===================== -->
+<div style="margin-bottom:40px;text-align:center;">
+  <div style="font-size:0.85em;margin-bottom:00px;">Niveau de difficulté</div>
+
+  <div style="display:flex;gap:1px;justify-content:center;flex-wrap:wrap;">
+    <div class="btn btn-affrontements"style="min-width:0px;padding:6px 8px;"onclick="aff_setDifficulty('easy')"> Facile </div>
+    <div class="btn btn-affrontements"style="min-width:0px;padding:6px 8px;"onclick="aff_setDifficulty('medium')">Moyen</div>
+    <div class="btn btn-affrontements"style="min-width:0px;padding:6px 8px;"onclick="aff_setDifficulty('hard')">Difficile</div>
+  </div>
+
+  <div id="aff_diff_label" style="margin-top:-5px;font-size:1.2em;opacity:.8;">
+    Niveau sélectionné : Facile
+  </div>
+</div>
+<div class="btn btn-affrontements"
+     style="margin-top:10px;pointer-events:auto;"
+     onclick="aff_startGame()">Démarrer</div>
+    <div class="btn" style="margin-top:20px;" onclick="go('affrontements_setup')">Retour</div>
+  </div>
+</div>
+
+
+
+<!-- ===================== -->
+<!-- AFFRONTEMENTS – JEU (BLOC MODIFIÉ) -->
+<!-- ===================== -->
+<div id="affrontements_jeu" class="page"
+     style="
+       background-image:url('fond_affrontement.png');
+       padding:40px 70px;
+       box-sizing:border-box;
+       position:relative;
+     ">
+
+  <!-- BOUTON TOUR – BAS GAUCHE -->
+  <div style="position:absolute;bottom:30px;left:40px;z-index : 10;">
+    <div class="btn btn-affrontements"
+         id="aff_turn_btn"
+         onclick="aff_nextTurn()">Tour 1</div>
+  </div>
+
+  <!-- MENU – BAS DROITE -->
+  <div style="position:absolute;bottom:30px;right:40px;">
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+
+  <!-- PLATEAU -->
+  <div id="aff_board"
+       style="
+         display:grid;
+         grid-template-columns:repeat(3,1fr);
+         grid-template-rows:repeat(2,1fr);
+         gap:00px;
+         max-width:1200px;
+         margin:0% auto 0 auto;
+       ">
+  </div>
+</div>
+
+<script>
+/* ===================== */
+/* AJUSTEMENTS LOGIQUES */
+/* ===================== */
+
+  aff_render();
+  go("affrontements_jeu");
+}
+
+/* RAND DANS POOL UNIQUE */
+function aff_randPool(pool){
+  const i=Math.floor(Math.random()*pool.length);
+  const c=pool[i];
+  pool.splice(i,1);
+  return c;
+}
+
+/* RENDER – NOM + POINTS SUR MÊME LIGNE */
+function aff_render(){
+  const b=document.getElementById("aff_board");
+  b.innerHTML="";
+  affPlayers.forEach((p,i)=>{
+    const d=document.createElement("div");
+    d.style.cssText="background:rgba(255,255,255,.15);padding:12px;border:2px solid #000;text-align:center";
+    d.ondragover=e=>e.preventDefault();
+    d.ondrop=()=>aff_drop(i);
+
+    let html=`<div style="display:flex;justify-content:space-between;font-weight:bold">
+                <span>${p.name}${p.points} pts</span>;
+
+    if(affEliminated.includes(p.name)){
+      html+=`<strong>Éliminé</strong>`;
+    }else if(p.cards.length===0){
+      html+=`<div class="btn btn-affrontements" onclick="aff_eliminate(${i})">Sauvetage</div>`;
+    }else{
+      html+="<div style='display:flex;flex-wrap:wrap;justify-content:center'>";
+      p.cards.forEach(c=>{
+        html+=`<img src="${aff_norm(c.name)}.jpg" draggable="true"
+               ondragstart="aff_drag(${i},'${c.name}')"
+               style="width:80px;margin:4px;">`;
+      });
+      html+="</div>";
+    }
+
+    d.innerHTML=html;
+    b.appendChild(d);
+  });
+}
+</script>
+
+<!-- ===================== -->
+<!-- AFFRONTEMENTS – RÉSULTATS -->
+<!-- ===================== -->
+<div id="affrontements_resultats" class="page"
+     style="background-image:url('fond_affrontement.png');padding:60px;box-sizing:border-box;">
+
+  <div class="center-full">
+    <h1>Classement final</h1>
+    <div id="aff_ranking" style="font-size:2em;margin:30px 0;"></div>
+
+    <div style="display:flex;gap:30px;justify-content:center;">
+      <div class="btn btn-affrontements" onclick="go('affrontements_setup')">
+        Relancer une partie
+      </div>
+      <div class="btn" onclick="go('menu')">Menu</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== */
+/* DONNÉES PAYS / POINTS */
+/* ===================== */
+const affGreen={"Russie":10,"Canada":17,"États-Unis":18,"Brésil":20,"Australie":22,"Inde":50,"Argentine":57,"Kazakhstan":63,"Algérie":71,"République démocratique du Congo":71,"Danemark":76,"Arabie saoudite":82,"Mexique":88,"Indonésie":88,"Soudan":88,"Libye":95,"Iran":104,"Mongolie":109,"Pérou":133,"Tchad":133,"Niger":135,"Angola":135,"Mali":138,"Afrique du Sud":140,"Colombie":151,"Éthiopie":155,"Bolivie":155,"Mauritanie":166,"Égypte":171};
+const affYellow={"Tanzanie":182,"Nigeria":185,"Venezuela":188,"Namibie":209,"Mozambique":213,"Pakistan":216,"Turquie":216,"Chili":225,"Zambie":225,"Birmanie":255,"France":255,"Afghanistan":261,"Soudan du Sud":273,"Somalie":273,"République centrafricaine":273,"Ukraine":280,"Madagascar":294,"Botswana":294,"Kenya":294,"Yémen":328,"Thaïlande":338,"Espagne":338,"Turkménistan":348,"Cameroun":359,"Papouasie-Nouvelle-Guinée":371,"Suède":383,"Ouzbékistan":383,"Maroc":383,"Irak":396,"Paraguay":425};
+const affRed={"Zimbabwe":442,"Japon":460,"Allemagne":479,"République du Congo":500,"Finlande":500,"Viêt Nam":522,"Malaisie":522,"Norvège":522,"Côte d'Ivoire":522,"Pologne":547,"Oman":547,"Italie":575,"Philippines":575,"Burkina Faso":638,"Nouvelle-Zélande":638,"Gabon":638,"Sahara occidental":638,"Équateur":676,"Guinée":676,"Royaume-Uni":718,"Ouganda":718,"Ghana":718,"Roumanie":718,"Laos":718,"Guyana":821,"Biélorussie":821,"Kirghizistan":884,"Sénégal":884,"Syrie":958,"Cambodge":958};
+
+/* ===================== */
+/* MÉMOIRE DES CARTES */
+/* ===================== */
+const affUsedCards = new Set();
+
+/* ===================== */
+/* ÉTAT */
+/* ===================== */
+let affNbPlayers=0;
+let affPlayers=[];
+let affTurn=1;
+let affDragged=null;
+let affEliminated=[];
+let affGameOver=false;
+
+/* ===================== */
+/* DIFFICULTÉ */
+/* ===================== */
+let affDifficulty = "easy";
+
+function aff_setDifficulty(level){
+  affDifficulty = level;
+  const labels = {
+    easy: "Facile",
+    medium: "Moyen",
+    hard: "Difficile",
+    pro: "Pro"
+  };
+  document.getElementById("aff_diff_label").innerText =
+    "Niveau sélectionné : " + labels[level];
+}
+
+/* ===================== */
+/* SETUP */
+/* ===================== */
+function aff_preparePlayers(nb){
+  affNbPlayers=nb;
+  const box=document.getElementById("affrontements_name_inputs");
+  box.innerHTML="";
+  for(let i=0;i<nb;i++){
+    box.innerHTML+=`<input id="aff_name_${i}" placeholder="Nom du joueur ${i+1}">`;
+  }
+  go("affrontements_names");
+}
+
+function aff_startGame(){
+  affPlayers = [];
+  affEliminated = [];
+  affGameOver = false;
+  affDragged = null;
+  affTurn = 1;
+  affUsedCards.clear();
+
+  document.getElementById("aff_turn_btn").innerText = "Tour 1";
+
+  for(let i = 0; i < affNbPlayers; i++){
+    const name =
+      document.getElementById("aff_name_" + i).value || "Joueur " + (i + 1);
+
+    const p = { name: name, cards: [], points: 0 };
+
+    // 🎯 DISTRIBUTION SELON NIVEAU
+    switch(affDifficulty){
+      case "easy":
+        aff_addCard(p, aff_rand(affGreen));
+        aff_addCard(p, aff_rand(affGreen));
+        aff_addCard(p, aff_rand(affYellow));
+        break;
+
+      case "medium":
+        aff_addCard(p, aff_rand(affYellow));
+        aff_addCard(p, aff_rand(affYellow));
+        aff_addCard(p, aff_rand(affGreen));
+        break;
+
+      case "hard":
+        aff_addCard(p, aff_rand(affYellow));
+        aff_addCard(p, aff_rand(affYellow));
+        aff_addCard(p, aff_rand(affRed));
+        break;
+
+      case "pro":
+        aff_addCard(p, aff_rand(affRed));
+        aff_addCard(p, aff_rand(affRed));
+        aff_addCard(p, aff_rand(affYellow));
+        break;
+    }
+
+    affPlayers.push(p);
+  }
+
+  aff_render();
+  go("affrontements_jeu");
+}
+/* ===================== */
+/* CARTES */
+/* ===================== */
+function aff_addCard(p,c){
+  if(!c) return;
+  let pts=0;
+  if(affGreen[c]!==undefined) pts=affGreen[c];
+  else if(affYellow[c]!==undefined) pts=affYellow[c];
+  else if(affRed[c]!==undefined) pts=affRed[c];
+  p.cards.push({name:c,points:pts});
+  p.points+=pts;
+}
+
+/* 🔒 TIRAGE UNIQUE */
+function aff_rand(obj){
+  const keys=Object.keys(obj).filter(k=>!affUsedCards.has(k));
+  if(keys.length===0) return null;
+  const card=keys[Math.floor(Math.random()*keys.length)];
+  affUsedCards.add(card);
+  return card;
+}
+
+function aff_norm(n){
+  return n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/ /g,"-").replace(/[^a-z-]/g,"");
+}
+
+/* ===================== */
+/* DRAG & DROP */
+/* ===================== */
+function aff_drag(from,name){
+  if(affGameOver) return;
+  if(affEliminated.includes(affPlayers[from].name)) return;
+  affDragged={from:from,name:name};
+}
+
+function aff_drop(to){
+  if(!affDragged||affDragged.from===to||affGameOver) return;
+
+  const fromP=affPlayers[affDragged.from];
+  const toP=affPlayers[to];
+  const card=fromP.cards.find(c=>c.name===affDragged.name);
+  if(!card) return;
+
+  fromP.cards=fromP.cards.filter(c=>c!==card);
+  fromP.points-=card.points;
+
+  toP.cards.push(card);
+  toP.points+=card.points;
+
+  affDragged=null;
+  aff_render();
+  aff_checkWinner();
+}
+
+/* ===================== */
+/* RENDER (MODIFIÉ) */
+/* ===================== */
+function aff_render(){
+  const b = document.getElementById("aff_board");
+  b.innerHTML = "";
+
+  const classement = [...affPlayers]
+    .sort((a,b)=>b.points-a.points)
+    .map(p=>p.name);
+
+  affPlayers.forEach((p,i)=>{
+    const d = document.createElement("div");
+    d.style.cssText =
+      "background:rgba(255,255,255,.15);padding:1px;border:2px solid #000;text-align:center";
+
+    d.ondragover = e => e.preventDefault();
+    d.ondrop = () => aff_drop(i);
+
+    const rank = classement.indexOf(p.name) + 1;
+
+    // 🔧 HEADER CORRIGÉ (SYNTAXE OK)
+    let html = `
+      <strong>${p.name}</strong> — ${p.points} pts — #${rank}
+      <hr>
+    `;
+
+    // 🟢 SAUVETAGE / ÉLIMINÉ
+    if(affEliminated.includes(p.name)){
+      html += `<strong>Éliminé</strong>`;
+    }
+    else if(p.cards.length === 0){
+      html += `
+        <div class="btn btn-affrontements"
+             onclick="aff_eliminate(${i})">
+          Sauvetage
+        </div>
+      `;
+    }
+    else{
+      html += `<div style="display:flex;justify-content:center;flex-wrap:nowrap">`;
+      p.cards.forEach((c,idx)=>{
+        html += `
+          <img src="${aff_norm(c.name)}.jpg"
+               draggable="true"
+               ondragstart="aff_drag(${i},'${c.name}')"
+               style="width:90px;margin-left:${idx===0?0:-18}px;">
+        `;
+      });
+      html += `</div>`;
+    }
+
+    d.innerHTML = html;
+    b.appendChild(d);
+  });
+function aff_nextTurn(){
+  if(affGameOver) return;
+
+  affTurn++;
+
+  if(affTurn > 6){
+    aff_endGame();
+    return;
+  }
+
+  document.getElementById("aff_turn_btn").innerText = "Tour " + affTurn;
+}
+
+}
+function aff_nextTurn(){
+  if(affGameOver) return;
+
+  affTurn++;
+
+  if(affTurn > 6){
+    aff_endGame();
+    return;
+  }
+
+  document.getElementById("aff_turn_btn").innerText = "Tour " + affTurn;
+}
+
+
+/* ===================== */
+/* FIN / VICTOIRE */
+/* ===================== */
+function aff_eliminate(i){
+  const p=affPlayers[i];
+  if(!affEliminated.includes(p.name)){
+    affEliminated.push(p.name);
+    aff_render();
+    aff_checkWinner();
+  }
+}
+
+function aff_checkWinner(){
+  const alive=affPlayers.filter(p=>!affEliminated.includes(p.name)&&p.cards.length>0);
+  if(alive.length===1) aff_endGame();
+}
+
+function aff_endGame(){
+  if(affGameOver) return;
+  affGameOver=true;
+  const alive=affPlayers.filter(p=>!affEliminated.includes(p.name));
+  const eliminated=affPlayers.filter(p=>affEliminated.includes(p.name));
+  alive.sort((a,b)=>b.points-a.points);
+  eliminated.reverse();
+  const ranking=[...alive,...eliminated];
+  document.getElementById("aff_ranking").innerHTML=
+    ranking.map((p,i)=>`${i+1}. ${p.name} – ${p.points} pts`).join("<br>");
+  go("affrontements_resultats");
+}
+</script>
+
+
+
+
+
+<!-- ================================================== -->
+<!-- ================== EXPÉDITION =================== -->
+<!-- ================================================== -->
+
+<!-- ===================== -->
+<!-- EXPÉDITION – MENU -->
+<!-- ===================== -->
+<div id="expedition_menu" class="page"
+     style="background-image:url('fond_expedition.png');background-size:cover;">
+  <div class="center-full">
+    <h1 class="pirate-title">Expédition</h1>
+    <div class="btn btn-expedition" onclick="go('expedition_setup')">Jouer</div>
+    <div class="btn" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- EXPÉDITION – SETUP : NOMBRE DE JOUEURS -->
+<!-- ===================== -->
+<div id="expedition_setup" class="page"
+     style="background-image:url('fond_expedition.png');background-size:cover;">
+  <div class="center-full">
+
+    <h1 class="pirate-title">Nombre de joueurs</h1>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(2,260px);
+      grid-template-rows:repeat(3,80px);
+      gap:25px 120px;
+      justify-content:center;
+      align-items:center;
+      margin-left:-120px;
+    ">
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(1)">1 joueur</div>
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(2)">2 joueurs</div>
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(3)">3 joueurs</div>
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(4)">4 joueurs</div>
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(5)">5 joueurs</div>
+      <div class="btn btn-expedition" onclick="exp_preparePlayers(6)">6 joueurs</div>
+    </div>
+
+    <div class="btn" style="margin-top:50px;" onclick="go('menu')">Menu</div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- EXPÉDITION – SETUP : NOMS -->
+<!-- ===================== -->
+<div id="expedition_names" class="page"
+     style="background-image:url('fond_expedition.png');background-size:cover;">
+  <div class="center-full">
+
+    <h1 class="pirate-title">Nom des joueurs</h1>
+
+    <div id="exp_name_inputs"
+         style="display:flex;flex-direction:column;gap:20px;width:420px;text-align:center;">
+    </div>
+
+    <div class="btn btn-expedition" style="margin-top:35px;" onclick="exp_start()">
+      Démarrer la partie
+    </div>
+
+    <div class="btn" style="margin-top:40px;" onclick="go('expedition_setup')">
+      Retour
+    </div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- EXPÉDITION – JEU (BASE SAINE) -->
+<!-- ===================== -->
+<div id="expedition_jeu" class="page"
+     style="background-image:url('fond_expedition.png');background-size:cover;">
+  <div style="
+    width:80%;
+    height:720px;
+    margin:-80px auto 0;
+    padding:25px;
+    box-sizing:border-box;
+    display:flex;
+    gap:30px;
+    background:rgba(255,255,255,0.05);
+  ">
+
+    <!-- ===== GAUCHE ===== -->
+    <div style="width:100%;display:flex;justify-content:center;">
+      <div style="
+        width:90%;
+	margin-left : -350px;
+        max-width:520px;
+        display:flex;
+        flex-direction:column;
+        justify-content:space-between;
+      ">
+
+        <div>
+          <h1 id="exp_turn" class="pirate-title" style="text-align:center;">
+            Tour 1
+          </h1>
+
+          <div id="exp_current_player"
+               style="font-size:1.4em;margin-bottom:10px;text-align:center;"></div>
+
+
+
+<div style="font-size:2em;font-weight:bold; margin-top:00px; margin-bottom:6px;">
+  Cartes Distribués :
+</div>
+          <div id="exp_hand_active"
+     ondragover="event.preventDefault()"
+     ondrop="exp_dropToHand(event)"
+               style=  
+  border:3px solid #3b2a1a;
+  background:rgba(40,25,15,0.6);
+  border-radius:12px;
+  box-shadow:inset 0 0 15px rgba(0,0,0,0.8);
+  overflow : hiden;
+  margin-top : 30px;
+  margin-bottom : 100px;
+">
+<div style="font-size:2em;font-weight:bold; margin-top:00px; margin-bottom:6px;">
+  Cartes validées:
+</div>
+
+
+          </div style="margin-top=20px";fint-weight : bold;"></div>
+<div style="display:flex; gap:30px; align-items:flex-start;">
+
+<div id="exp_validated"
+     ondragover="event.preventDefault()"
+     ondrop="exp_dropCard(event)"
+     style="
+       width : 100px;
+       min-width: 420px;
+       min-height: 140px;
+       border:1px solid #3b2a1a;
+       background:rgba(40,25,15,0.6);
+       border-radius:10px;
+       box-shadow:inset 0 0 15px rgba(0,0,0,0.8);
+       margin-top:0px;
+       
+     ">
+</div>
+<!-- PIOCHES À DROITE DES CARTES VALIDÉES -->
+<div style="
+  display:flex;
+  gap:20px;
+  margin-top:0px;
+  justify-content:center;
+">
+
+  <!-- Pioche Trésor -->
+ <div id="exp_treasure_pile"
+     draggable="true"
+     ondragstart="event.dataTransfer.setData('text/plain','TREASURE')"
+       style="
+         width:100px;
+         height:140px;
+         background:url('tresor-cache.jpg') center/cover;
+         border:2px solid #000;
+         border-radius:8px;
+         cursor:grab;
+       ">
+  </div>
+
+  <!-- Pioche Bonus -->
+  <div id="exp_bonus_pile"
+     draggable="true"
+     ondragstart="exp_dragBonus(event)"
+       style="
+         width:100px;
+         height:140px;
+         background:url('bonus-cache.jpg') center/cover;
+         border:2px solid #000;
+         border-radius:8px;
+         cursor:grab;
+       ">
+  </div>
+
+   <!-- Pioche Naufrage -->
+   <div id="exp_naufrage_pile"
+     draggable="true"
+     ondragstart="exp_dragNaufrage(event)"
+     style="
+       width:100px;
+       height:140px;
+       background:url('naufrage.jpg') center/cover;
+       border:2px solid #000;
+       border-radius:8px;
+       cursor:pointer;
+     ">
+</div>
+</div>
+</div>
+
+
+<div id="exp_scoreline"
+     style="
+       margin : 20px;
+       margin-top:5px;
+       font-weight:bold;
+       text-align:center;
+       font-size:30px;">
+</div>
+
+<div style="display:flex;justify-content:center;gap:20px;margin-top:20px;">
+  <div class="btn btn-expedition" onclick="exp_validate()">Valider</div>
+  <div class="btn" onclick="exp_pass()">Passer</div>
+  <div class="btn" onclick="exp_undo()">Retour</div>
+  <div class="btn" onclick="go('menu')">menu</div>
+</div>
+
+  
+
+      </div>
+    </div>
+</div>
+
+<script>
+/* ================================================== */
+/* ============ EXPÉDITION – SCRIPT ================= */
+/* ============ BRIQUE 2 : CARTES =================== */
+/* ================================================== */
+
+/* ===== DONNÉES PAYS ===== */
+const expGreen={"Russie":10,"Canada":17,"États-Unis":18,"Brésil":20,"Australie":22,"Inde":50,"Argentine":57,"Kazakhstan":63,"Algérie":71,"République démocratique du Congo":71,"Danemark":76,"Arabie saoudite":82,"Mexique":88,"Indonésie":88,"Soudan":88,"Libye":95,"Iran":104,"Mongolie":109,"Pérou":133,"Tchad":133,"Niger":135,"Angola":135,"Mali":138,"Afrique du Sud":140,"Colombie":151,"Éthiopie":155,"Bolivie":155,"Mauritanie":166,"Égypte":171};
+const expYellow={"Tanzanie":182,"Nigeria":185,"Venezuela":188,"Namibie":209,"Mozambique":213,"Pakistan":216,"Turquie":216,"Chili":225,"Zambie":225,"Birmanie":255,"France":255,"Afghanistan":261,"Soudan du Sud":273,"Somalie":273,"République centrafricaine":273,"Ukraine":280,"Madagascar":294,"Botswana":294,"Kenya":294,"Yémen":328,"Thaïlande":338,"Espagne":338,"Turkménistan":348,"Cameroun":359,"Papouasie-Nouvelle-Guinée":371,"Suède":383,"Ouzbékistan":383,"Maroc":383,"Irak":396,"Paraguay":425};
+const expRed={"Zimbabwe":442,"Japon":460,"Allemagne":479,"République du Congo":500,"Finlande":500,"Viêt Nam":522,"Malaisie":522,"Norvège":522,"Côte d'Ivoire":522,"Pologne":547,"Oman":547,"Italie":575,"Philippines":575,"Burkina Faso":638,"Nouvelle-Zélande":638,"Gabon":638,"Sahara occidental":638,"Équateur":676,"Guinée":676,"Royaume-Uni":718,"Ouganda":718,"Ghana":718,"Roumanie":718,"Laos":718,"Guyana":821,"Biélorussie":821,"Kirghizistan":884,"Sénégal":884,"Syrie":958,"Cambodge":958};
+
+/* ===== BONUS ===== */
+const expBonus = {
+  "un-pays-de-chaque":200,
+  "trois-pays-jaune":300,
+  "bonus-cameroun":359,
+  "un-tour-supplementaire":0,
+  "bonus-france":255,
+  "trois-pays-frontaliers":300,
+  "pays-sans-carte":300,
+  "bonus-suede":383,
+  "bonus-venezuela":188,
+  "zone-naufrage":0
+};
+
+/* ===== TRÉSOR ===== */
+const expTreasureCards = {
+  "tresorcent":100,
+  "tresorcentdeux":100,
+  "tresorcenttrois":100,
+  "tresordeuxcent":200,
+  "tresordeuxcentdeux":200,
+  "tresortroiscent":300,
+  "tresortroiscentdeux":300,
+  "tresorcinqcent":500,
+  "tresorcinqcentdeux":500
+};
+
+/* ===== PIOCHES (SANS DOUBLON) ===== */
+let expBonusPool = Object.keys(expBonus);
+let expTreasurePool = Object.keys(expTreasureCards);
+
+/* ===== ÉTAT ===== */
+let expNbPlayers=0;
+let expPlayers=[];
+let expTurn=1;
+let expIndex=0;
+let expValidated = [];
+let expDraggedCard = null;
+let tourActions = []; // journal des actions du tour
+let naufrageVisuelActif = false;
+let expPendingNaufrages = 0;
+
+/* ===== PIOCHES GLOBALES (SANS DOUBLON) ===== */
+let poolGreen=[], poolYellow=[], poolRed=[], poolBonus=[];
+
+/* ===== OUTILS ===== */
+function drawFromPool(pool, n){
+  const res=[];
+  for(let i=0;i<n;i++){
+    if(!pool.length) break;
+    const idx=Math.floor(Math.random()*pool.length);
+    res.push(pool.splice(idx,1)[0]);
+  }
+  return res;
+}
+
+/* ===== SETUP ===== */
+function exp_preparePlayers(nb){
+  expNbPlayers=nb;
+  const inputs=document.getElementById("exp_name_inputs");
+  inputs.innerHTML="";
+  for(let i=0;i<nb;i++){
+    inputs.innerHTML+=`<input id="exp_name_${i}" placeholder="Nom du joueur ${i+1}">`;
+  }
+  go("expedition_names");
+}
+
+/* ===== DÉMARRAGE ===== */
+function exp_start(){
+  if(expNbPlayers===0) return;
+
+  poolGreen=Object.keys(expGreen);
+  poolYellow=Object.keys(expYellow);
+  poolRed=Object.keys(expRed);
+  poolBonus=Object.keys(expBonus);
+  expBonusPool = [...Object.keys(expBonus)];
+
+  expPlayers=[];
+
+  for(let i=0;i<expNbPlayers;i++){
+    const name=document.getElementById("exp_name_"+i).value||"Joueur "+(i+1);
+
+    const hand=[
+      ...drawFromPool(poolGreen,3),
+      ...drawFromPool(poolYellow,3),
+      ...drawFromPool(poolRed,3),
+      ...drawFromPool(poolBonus,1)
+    ];
+
+    expPlayers.push({
+      name,
+      points:0,
+      hand,
+      gained:[]
+    });
+  }
+
+  expTurn=1;
+  expIndex=0;
+
+  exp_render();
+  go("expedition_jeu");
+}
+
+/* ===== TOURS ===== */
+function exp_nextTurn(){
+  expIndex++;
+
+  if(expIndex >= expPlayers.length){
+    expIndex = 0;
+    expTurn++;
+    exp_applyPendingNaufrages();
+
+    // FIN DE PARTIE APRÈS 6 TOURS
+    if(expTurn > 6){
+      exp_end();
+      return;
+    }
+  }
+
+  exp_render();
+}
+
+/* ===== FIN DE PARTIE ===== */
+function exp_end(){
+  const classement = [...expPlayers]
+    .sort((a,b)=>b.points - a.points);
+
+  let html = "<h1 class='pirate-title'>Classement final</h1><br>";
+
+  classement.forEach((p,i)=>{
+    html += `${i+1}. <strong>${p.name}</strong> – ${p.points} pts<br><br>`;
+  });
+
+  const overlay = document.createElement("div");
+  overlay.className = "page active";
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:url('fond_expedition.png') center/cover;
+    z-index:9999;
+  `;
+
+  overlay.innerHTML = `
+    <div class="center-full">
+      ${html}
+      <div class="btn" style="margin-top:40px;"
+           onclick="this.closest('.page').remove();go('menu')">
+        Menu
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+/* ===================== */
+/* ===== DROP ========== */
+/* ===================== */
+
+
+/* ===================== */
+/* ===== UNDO ========== */
+/* ===================== */
+function exp_undo(){
+  const p = expPlayers[expIndex];
+  if(!expValidated.length) return;
+
+  const card = expValidated.pop();
+  p.hand.push(card);
+
+  exp_render();
+}
+
+/* ===================== */
+/* ===== VALIDATE ====== */
+/* ===================== */
+
+function exp_validate(){
+  const p = expPlayers[expIndex];
+
+  if (!expValidated.length) {
+    exp_nextTurn();
+    return;
+  }
+
+  // 🔥 1) Compter les naufrages
+  const naufrages = expValidated.filter(c => c === "naufrage").length;
+
+  // 🔥 2) Appliquer les cartes normales (NON naufrage)
+  expValidated.forEach(card => {
+    if (card === "naufrage") return;
+
+    let pts = 0;
+    const base = baseCard(card);
+
+    if (expGreen[base]) pts = expGreen[base];
+    else if (expYellow[base]) pts = expYellow[base];
+    else if (expRed[base]) pts = expRed[base];
+    else if (expBonus[base]) pts = expBonus[base];
+    else if (expTreasureCards && expTreasureCards[base]) pts = expTreasureCards[base];
+
+    p.points += pts;
+    p.gained.push(card);
+  });
+
+  // 🔥 3) APPLIQUER LES NAUFRAGES
+  for (let i = 0; i < naufrages; i++) {
+    if (!p.gained.length) break;
+
+    const idx = Math.floor(Math.random() * p.gained.length);
+    const removed = p.gained.splice(idx, 1)[0];
+
+    let pts = 0;
+    const base = baseCard(removed);
+
+    if (expGreen[base]) pts = expGreen[base];
+    else if (expYellow[base]) pts = expYellow[base];
+    else if (expRed[base]) pts = expRed[base];
+    else if (expBonus[base]) pts = expBonus[base];
+    else if (expTreasureCards && expTreasureCards[base]) pts = expTreasureCards[base];
+
+    p.points -= pts;
+  }
+
+  // 🔥 4) RESET
+  expValidated = [];
+
+  // reset visuel naufrage
+  const pile = document.getElementById("exp_naufrage_pile");
+  if (pile) pile.style.backgroundImage = "url('naufrage.jpg')";
+
+  exp_nextTurn();
+}
+
+/* ===================== */
+/* ===== RENDER ======== */
+/* ===================== */
+function exp_render(){
+  if(!expPlayers.length) return;
+  const p = expPlayers[expIndex];
+  if(!p) return;
+
+  document.getElementById("exp_turn").innerText = "Tour " + expTurn;
+  document.getElementById("exp_current_player").innerText =
+    p.name + " – " + p.points + " pts";
+
+  /* ===== MAIN ===== */
+  const handBox = document.getElementById("exp_hand_active");
+  handBox.innerHTML = "";
+  handBox.style.position = "relative";
+  handBox.style.height = "120px";
+  handBox.style.marginBottom = "80px";
+
+
+  p.hand.forEach((card, i)=>{
+    const img = document.createElement("img");
+    img.src = normalize(baseCard(card)) + ".jpg";
+    img.draggable = true;
+
+    img.style.position = "absolute";
+    img.style.left = `${i * 80}px`;
+    img.style.top = "0";
+    img.style.width = "110px";
+    img.style.cursor = "grab";
+    img.style.zIndex = i;
+
+    img.ondragstart = e => {
+      e.dataTransfer.setData("text/plain", card);
+    };
+
+    handBox.appendChild(img);
+  });
+
+/* ===== VALIDÉES (NORMALES + BONUS + TRÉSOR) ===== */
+const valBox = document.getElementById("exp_validated");
+valBox.innerHTML = "";
+valBox.style.position = "relative";
+valBox.style.height = "140px";
+
+const allCards = [...expValidated, ...p.gained];
+
+allCards.forEach((card, i)=>{
+  const img = document.createElement("img");
+  const base = baseCard(card);
+
+if (base === "naufrage") {
+  img.src = "naufrage-en-cours.jpg";
+} else {
+  img.src = normalize(base) + ".jpg";
+}
+
+  img.style.position = "absolute";
+  img.style.left = `${i * 32}px`;
+  img.style.top = "0";
+  img.style.width = "90px";
+  img.style.borderRadius = "6px";
+  img.style.zIndex = i;
+
+  valBox.appendChild(img);
+});
+
+
+// ===== SCORE LINE =====
+const scoreLine = document.getElementById("exp_scoreline");
+if (scoreLine) {
+  const ordered = [...expPlayers]
+    .sort((a, b) => b.points - a.points)
+    .map(p => `${p.name} : ${p.points} pts`)
+    .join(" | ");
+
+  scoreLine.innerText = ordered;
+}
+
+}
+function exp_pass(){
+  expValidated = [];
+  exp_nextTurn();
+}
+function exp_dropCard(e){
+  e.preventDefault();
+const card = e.dataTransfer.getData("text/plain");
+
+if(!card) return;
+
+  const p = expPlayers[expIndex];
+  if(!p) return;
+
+  const data = e.dataTransfer.getData("text/plain");
+
+  /* ===== DROP PIOCHE TRÉSOR ===== */
+  if(data === "TREASURE"){
+    const keys = Object.keys(expTreasureCards);
+    if(!keys.length) return;
+
+
+    const card = keys[Math.floor(Math.random() * keys.length)];
+   expValidated.push(card);
+
+    exp_render();
+    return;
+  }
+
+
+/* ===== DROP NAUFRAGE ===== */
+if (data === "NAUFRAGE") {
+  expValidated.push("naufrage");
+  exp_render();
+  return;
+}
+
+  /* ===== DROP PIOCHE BONUS ===== */
+  if(data === "BONUS"){
+    const keys = Object.keys(expBonus);
+    if(!keys.length) return;
+
+    const card = keys[Math.floor(Math.random() * keys.length)];
+    p.points += expBonus[card];
+  
+
+    exp_render();
+    return;
+  }
+
+  /* ===== DROP CARTE NORMALE ===== */
+  if(!p.hand.includes(data)) return;
+
+  p.hand = p.hand.filter(c => c !== data);
+  expValidated.push(data);
+
+  exp_render();
+}
+
+function exp_dragBonus(e){
+  const keys = Object.keys(expBonus);
+  if(!keys.length) return;
+
+  const card = keys[Math.floor(Math.random() * keys.length)];
+  e.dataTransfer.setData("text/plain", card);
+}
+
+
+function exp_dropToHand(e){
+  e.preventDefault();
+  const p = expPlayers[expIndex];
+
+  const card = e.dataTransfer.getData("text/plain");
+  if(!card) return;
+
+  /* BONUS */
+  if(expBonus[card]){
+    if(!p.hand.includes(card)){
+    p.hand.push(makeUnique(card));
+    }
+    exp_render();
+    return;
+  }
+
+  /* TRÉSOR */
+  if(card.startsWith("tresor-")){
+    if(!p.hand.includes(card)){
+      p.hand.push(card);
+    }
+    exp_render();
+    return;
+  }
+}
+
+function makeUnique(card){
+  return card + "#" + Date.now() + Math.random();
+}
+
+function baseCard(card){
+  return card.split("#")[0];
+}
+
+function exp_applyPendingNaufrages() {
+  const p = expPlayers[expIndex];
+  if (!p || !expPendingNaufrages) return;
+
+  for (let n = 0; n < expPendingNaufrages; n++) {
+    if (!p.gained.length) break;
+
+    const i = Math.floor(Math.random() * p.gained.length);
+    const card = p.gained.splice(i, 1)[0];
+
+    const base = baseCard(card);
+    let pts = 0;
+
+    if (base in expGreen) pts = expGreen[base];
+    else if (base in expYellow) pts = expYellow[base];
+    else if (base in expRed) pts = expRed[base];
+    else if (base in expBonus) pts = expBonus[base];
+    else if (base in expTreasureCards) pts = expTreasureCards[base];
+
+    p.points -= pts;
+  }
+
+  expPendingNaufrages = 0;
+}
+
+
+function exp_dragNaufrage(e){
+  e.dataTransfer.setData("text/plain", "NAUFRAGE");
+}
+
+</script>
+</body>
+</html>
